@@ -33,6 +33,25 @@ import { categories, CategoryId, services, Service } from "@/data/services";
 
 type Language = "en" | "sv";
 type Tab = "home" | "calculator" | "notes" | "settings";
+const appVersion = process.env.NEXT_PUBLIC_APP_VERSION ?? "development";
+const buildTimestamp = process.env.NEXT_PUBLIC_BUILD_TIMESTAMP;
+
+function BuildBadge() {
+  const builtAt = buildTimestamp
+    ? new Intl.DateTimeFormat("en-GB", {
+        dateStyle: "medium",
+        timeStyle: "short",
+        timeZone: "Europe/Stockholm",
+      }).format(new Date(buildTimestamp))
+    : "local development";
+
+  return (
+    <footer className="buildBadge" aria-label={`Version ${appVersion}, built ${builtAt}`}>
+      <span>v{appVersion}</span>
+      <time dateTime={buildTimestamp}>{builtAt}</time>
+    </footer>
+  );
+}
 type Note = { id: string; title: string; body: string; date: string; category: string };
 type Coordinates = { latitude: number; longitude: number };
 
@@ -530,6 +549,7 @@ export default function AroundTownApp() {
               {tab === "calculator" && <CalculatorView language={language} onHelp={() => setHelpOpen(true)} />}
               {tab === "notes" && <NotesView language={language} onHelp={() => setHelpOpen(true)} />}
               {tab === "settings" && <SettingsView language={language} setLanguage={setLanguage} onHelp={() => setHelpOpen(true)} onReset={reset} />}
+              <BuildBadge />
             </main>
             <BottomNav tab={tab} setTab={setTab} language={language} />
           </>
